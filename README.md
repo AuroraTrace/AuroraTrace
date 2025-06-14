@@ -5,7 +5,7 @@
 **AuroraTrace** is an AI-powered blockchain analyzer designed to detect scams, contract vulnerabilities, and market risks in real time.  
 Built for traders, analysts, and security explorers — it brings precision scanning, intelligent alerts, and data-driven protection to your crypto journey.
 
-Navigate safely. Illuminate the unknown.
+Navigate safely. Illuminate the unknown
 
 ## 🌠 Key Features
 
