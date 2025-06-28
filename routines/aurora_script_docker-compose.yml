@@ -1,9 +1,21 @@
-version: '3'
+version: '3.8'
+
 services:
-  alyssium:
     build: .
+    env_file:
+      - .env
     ports:
       - "8000:8000"
     volumes:
-      - .:/app# comment filler line 0
-
+      - .:/app
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8000/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
