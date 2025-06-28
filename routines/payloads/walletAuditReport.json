@@ -1,0 +1,40 @@
+{
+  "reportId": "wallet_audit_20250628_042",
+  "auditedAt": "2025-06-28T12:25:00Z",
+  "wallet": {
+    "address": "FJt8xk3qAsy3BGNq9YqTrRZ12eXbwV5rWh2hkShx9N3v",
+    "tags": ["suspect", "high_activity"],
+    "firstSeen": "2025-06-19T07:12:00Z"
+  },
+  "activitySnapshot": {
+    "txCountLast24h": 312,
+    "uniqueTokensInteracted": 18,
+    "newTokensDeployed": 3,
+    "bridgedAssets": ["USDC", "wETH"],
+    "transferVolumeSOL": 1987.43
+  },
+  "patternFindings": [
+    {
+      "pattern": "Multi-token deployment",
+      "description": "Wallet created 3 new tokens in the last 24 hours"
+    },
+    {
+      "pattern": "Bridge cycling",
+      "description": "Inbound and outbound bridge usage within a tight window"
+    },
+    {
+      "pattern": "High-frequency transfers",
+      "description": "Over 300 transactions within 24 hours — potential automation"
+    }
+  ],
+  "alerts": {
+    "contractCreationSpike": true,
+    "bridgeLoopSuspicion": true,
+    "spamDistributionRisk": true
+  },
+  "riskEvaluation": {
+    "overallRisk": "Elevated",
+    "score": 87,
+    "recommendation": "Flag for monitoring and rate-limit transfer actions if possible"
+  }
+}

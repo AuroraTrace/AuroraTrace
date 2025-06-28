@@ -1,0 +1,39 @@
+{
+  "snapshotId": "liquidity_pulse_20250628_109",
+  "capturedAt": "2025-06-28T14:10:47Z",
+  "token": {
+    "symbol": "NEBULA",
+    "mint": "B1D3x4asAqRpWqXEb7z8N3kVs7wQLXGf9tB9fN4xYzr1"
+  },
+  "pools": [
+    {
+      "platform": "Raydium",
+      "pair": "NEBULA/SOL",
+      "liquidityUSD": 58231,
+      "volume24h": 11230,
+      "priceImpact1k": 4.3,
+      "lpTokensStaked": 71201,
+      "poolHealthScore": 76
+    },
+    {
+      "platform": "Orca",
+      "pair": "NEBULA/USDC",
+      "liquidityUSD": 33890,
+      "volume24h": 9540,
+      "priceImpact1k": 6.1,
+      "lpTokensStaked": 50340,
+      "poolHealthScore": 61
+    }
+  ],
+  "aggregated": {
+    "totalLiquidityUSD": 92121,
+    "combinedVolume24h": 20770,
+    "avgPriceImpact1k": 5.2,
+    "weightedHealthScore": 69.2
+  },
+  "interpretation": {
+    "trend": "Declining",
+    "insight": "Both pools show moderate volume but weakening depth and higher slippage",
+    "recommendation": "Avoid large swaps, especially over $500, until liquidity stabilizes"
+  }
+}

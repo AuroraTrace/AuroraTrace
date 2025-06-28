@@ -1,0 +1,51 @@
+{
+  "logId": "anomaly_20250627_002",
+  "detectedAt": "2025-06-27T10:12:48Z",
+  "sourceModule": "DeepAnomalyCore",
+  "summary": "Detected abnormal trading behavior across volume and wallet clusters",
+  "anomalyRules": [
+    {
+      "rule": "volumeSpikeIndex",
+      "input": {
+        "currentVolume": 120000,
+        "averageVolume": 30000
+      },
+      "score": 400,
+      "verdict": "\ud83d\udea8 Extreme Volume Surge"
+    },
+    {
+      "rule": "smartWalletRatio",
+      "input": {
+        "activeWallets": 15,
+        "totalWallets": 40
+      },
+      "score": 37.5,
+      "verdict": "\ud83d\udcc8 Concentrated Smart Activity"
+    },
+    {
+      "rule": "detectFlashActivity",
+      "input": {
+        "volumeBursts": [
+          700,
+          1800,
+          4900,
+          10000
+        ]
+      },
+      "score": 3,
+      "verdict": "\ud83d\udea8 High Flash Pump Risk"
+    }
+  ],
+  "severityScore": 91,
+  "alertStatus": "triggered",
+  "recommendedActions": {
+    "notify": [
+      "core-feed",
+      "risk-alerts"
+    ],
+    "tagTokens": [
+      "under_suspicion"
+    ],
+    "enableChainTrace": true
+  }
+}

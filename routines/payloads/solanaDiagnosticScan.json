@@ -1,0 +1,42 @@
+{
+  "scanId": "diagnostic_20250628_001",
+  "scannedAt": "2025-06-28T09:44:13Z",
+  "scanner": "SolanaTraceEngine",
+  "token": {
+    "symbol": "XYZ",
+    "mint": "7hsd83Ksnq3fa45sgYsA8TUGsRnb9uZ9qebFwXvJtvqX",
+    "project": "Unknown"
+  },
+  "flags": {
+    "suspiciousLiquidityPattern": true,
+    "recentMintActivity": true,
+    "whaleAccumulation": false,
+    "sybilRiskScore": 72
+  },
+  "computedMetrics": {
+    "liquidityChange24h": -46.3,
+    "uniqueBuyers": 12,
+    "smartWalletsEngaged": 0,
+    "volatilityScore": 88,
+    "lifetimeTxCount": 97
+  },
+  "interpretation": [
+    {
+      "tag": "⚠️ Liquidity Drop",
+      "explanation": "Liquidity dropped by more than 40% over 24h, indicating potential exit behavior"
+    },
+    {
+      "tag": "🧯 No Smart Wallets",
+      "explanation": "No verified smart wallets interacted with this token recently"
+    },
+    {
+      "tag": "🧪 Sybil Suspicion",
+      "explanation": "Sybil risk score above threshold — possible distribution to linked wallets"
+    }
+  ],
+  "finalVerdict": {
+    "riskLevel": "High",
+    "recommendation": "Avoid trading or interacting until metrics stabilize",
+    "confidence": 0.92
+  }
+}
