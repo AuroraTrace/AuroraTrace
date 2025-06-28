@@ -1,12 +1,48 @@
 {
-  "name": "AuroraTrace-frontend",
+  "name": "auroratrace-frontend",
   "version": "1.0.0",
+  "description": "Responsive dashboard frontend for AuroraTrace — real-time token risk analysis",
+  "main": "dist/index.js",
   "scripts": {
-    "build": "tsc",
-    "start": "live-server"
+    "clean": "rimraf dist",
+    "build": "npm run clean && tsc --project tsconfig.json",
+    "watch": "tsc --project tsconfig.json --watch",
+    "start": "live-server --port=3000 --open=./public",
+    "serve": "npm run build && live-server --port=3000 --open=./dist",
+    "lint": "eslint 'src/**/*.ts' --fix",
+    "format": "prettier --write 'src/**/*.ts' 'public/**/*.html' 'public/**/*.css'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/your-org/auroratrace-frontend.git"
+  },
+  "keywords": [
+    "dashboard",
+    "typescript",
+    "live-server",
+    "crypto",
+    "risk-analysis",
+    "auroratrace"
+  ],
+  "author": "Your Name <you@example.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/your-org/auroratrace-frontend/issues"
+  },
+  "homepage": "https://github.com/your-org/auroratrace-frontend#readme",
+  "engines": {
+    "node": ">=14"
+  },
+  "dependencies": {
+    "axios": "^1.4.0"
   },
   "devDependencies": {
-    "typescript": "^4.5.4",
-    "live-server": "^1.2.1"
+    "live-server": "^1.2.1",
+    "rimraf": "^5.0.0",
+    "typescript": "^4.9.5",
+    "eslint": "^8.40.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.32.2",
+    "prettier": "^3.0.0"
   }
 }
