@@ -1,17 +1,17 @@
-
 import { headers } from "next/headers"
 
 /**
  * Retrieves the current request path from custom headers.
- * Falls back to '/' if the header is missing.
+ * Falls back to '/' if unavailable or invalid.
  */
-export const getCurrentRequestPath = async (): Promise<string> => {
-    try {
-        const headerList = await headers();
-        const path = headerList.get("x-current-path");
-        return path ?? "/";
-    } catch (error) {
-        console.error("Failed to get current path from headers:", error);
-        return "/";
-    }
-};
+export const getCurrentRequestPath = (): string => {
+  try {
+    const headerList = headers()
+    const path = headerList.get("x-current-path")
+
+    return typeof path === "string" && path.length > 0 ? path : "/"
+  } catch (error) {
+    console.error("Failed to get current path from headers:", error)
+    return "/"
+  }
+}
