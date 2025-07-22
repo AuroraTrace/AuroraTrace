@@ -1,5 +1,6 @@
 import { queryBirdeye } from "./base"
 import { ChainType } from "@/app/_contexts/chain-context"
+import { z } from "zod"
 
 import {
   TopTradersByTokenTimeFrame,
@@ -8,32 +9,28 @@ import {
   TopTradersByTokenResponse
 } from "./types"
 
-type TraderQueryParams = {
-  address: string
-  timeFrame?: TopTradersByTokenTimeFrame
-  sortType?: TopTradersByTokenSortType
-  sortBy?: TopTradersByTokenSortBy
-  offset?: number
-  limit?: number
-  chain?: ChainType
-}
+const TraderQuerySchema = z.object({
+  address: z.string().min(32, "Invalid token address"),
+  timeFrame: z.nativeEnum(TopTradersByTokenTimeFrame).optional(),
+  sortType: z.nativeEnum(TopTradersByTokenSortType).optional(),
+  sortBy: z.nativeEnum(TopTradersByTokenSortBy).optional(),
+  offset: z.number().int().nonnegative().optional(),
+  limit: z.number().int().min(1).max(100).optional(),
+  chain: z.enum(["solana", "ethereum", "bsc"]).optional()
+})
 
-export async function fetchBirdeyeTopTraders({
-  address,
-  timeFrame = TopTradersByTokenTimeFrame.TwentyFourHours,
-  sortType = TopTradersByTokenSortType.Descending,
-  sortBy = TopTradersByTokenSortBy.Volume,
-  offset = 0,
-  limit = 10,
-  chain = "solana"
-}: TraderQueryParams): Promise<TopTradersByTokenResponse> {
-  if (!address || address.length < 32) {
-    throw new Error("Invalid token address")
-  }
+export type TraderQueryParams = z.infer<typeof TraderQuerySchema>
 
-  if (limit < 1 || limit > 100) {
-    throw new Error("Limit must be between 1 and 100")
-  }
+export async function fetchBirdeyeTopTraders(params: TraderQueryParams): Promise<TopTradersByTokenResponse> {
+  const {
+    address,
+    timeFrame = TopTradersByTokenTimeFrame.TwentyFourHours,
+    sortType = TopTradersByTokenSortType.Descending,
+    sortBy = TopTradersByTokenSortBy.Volume,
+    offset = 0,
+    limit = 10,
+    chain = "solana"
+  } = TraderQuerySchema.parse(params)
 
   const payload = {
     address,
@@ -44,9 +41,13 @@ export async function fetchBirdeyeTopTraders({
     limit
   }
 
-  return queryBirdeye<TopTradersByTokenResponse>(
-    "defi/v2/tokens/top_traders",
-    payload,
-    chain
-  )
+  try {
+    return await queryBirdeye<TopTradersByTokenResponse>(
+      "defi/v2/tokens/top_traders",
+      payload,
+      chain as ChainType
+    )
+  } catch (error) {
+    throw new Error(`fetchBirdeyeTopTraders failed for ${address} on ${chain}: ${error}`)
+  }
 }
