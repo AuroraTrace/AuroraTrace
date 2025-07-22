@@ -6,7 +6,11 @@ export type VaultSchema = GenericSchema
 export type VaultResult<T> = ActionResponse<T>
 
 export interface VaultAction<T extends VaultSchema, R> extends ActionCore<T, R, Wallet> {
-  execute?:
-    | ((wallet: Wallet, input: z.infer<T>) => Promise<VaultResult<R>>)
-    | ((input: z.infer<T>) => Promise<VaultResult<R>>)
+  /**
+   * Execute the action with a Wallet and validated input.
+   */
+  execute: (params: {
+    wallet: Wallet
+    input: z.infer<T>
+  }) => Promise<VaultResult<R>>
 }
