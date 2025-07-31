@@ -9,6 +9,8 @@ interface StreamOptions {
   onComplete?: () => void
   /** callback on error */
   onError?: (error: Error) => void
+  /** whether to auto-reset index on completion (default: false) */
+  resetOnComplete?: boolean
 }
 
 export class WalletFlowStreamer {
@@ -17,10 +19,11 @@ export class WalletFlowStreamer {
   private onWallet: WalletCallback
   private onComplete?: () => void
   private onError?: (error: Error) => void
+  private resetOnComplete: boolean
 
-  private timerId: ReturnType<typeof setTimeout> | null = null
+  private timerId: NodeJS.Timeout | null = null
   private currentIndex = 0
-  private isPaused = false
+  private isRunning = false
 
   constructor(wallets: string[], opts: StreamOptions) {
     if (!Array.isArray(wallets) || wallets.length === 0) {
@@ -30,65 +33,73 @@ export class WalletFlowStreamer {
       throw new Error("Interval must be a positive number")
     }
 
-    this.wallets     = wallets
-    this.interval    = opts.interval
-    this.onWallet    = opts.onWallet
-    this.onComplete  = opts.onComplete
-    this.onError     = opts.onError
+    this.wallets          = wallets
+    this.interval         = opts.interval
+    this.onWallet         = opts.onWallet
+    this.onComplete       = opts.onComplete
+    this.onError          = opts.onError
+    this.resetOnComplete  = opts.resetOnComplete ?? false
   }
 
-  /** start or resume streaming */
-  start() {
-    if (this.timerId) return // already running
-    this.isPaused = false
-    this.scheduleNext()
+  /** Start streaming from current index */
+  start(): void {
+    if (this.isRunning) return
+    this.isRunning = true
+    this.timerId = setInterval(() => this.emitNext(), this.interval)
+    // emit first immediately
+    this.emitNext()
   }
 
-  /** pause without losing position */
-  pause() {
-    this.isPaused = true
-    if (this.timerId) {
-      clearTimeout(this.timerId)
-      this.timerId = null
-    }
+  /** Pause streaming without resetting index */
+  pause(): void {
+    this.clearTimer()
+    this.isRunning = false
   }
 
-  /** stop and reset */
-  stop() {
+  /** Stop streaming and reset index to zero */
+  stop(): void {
     this.pause()
     this.currentIndex = 0
   }
 
-  private scheduleNext() {
-    this.timerId = setTimeout(() => {
-      if (this.isPaused) return
-
-      try {
-        const wallet = this.wallets[this.currentIndex]
-        this.onWallet(wallet, this.currentIndex)
-      } catch (err: any) {
-        this.onError?.(err)
-        this.stop()
-        return
+  /** Internal: emit next wallet or complete */
+  private emitNext(): void {
+    if (this.currentIndex >= this.wallets.length) {
+      this.onComplete?.()
+      if (this.resetOnComplete) {
+        this.currentIndex = 0
       }
+      this.stop()
+      return
+    }
 
+    try {
+      const wallet = this.wallets[this.currentIndex]
+      this.onWallet(wallet, this.currentIndex)
       this.currentIndex++
-      if (this.currentIndex >= this.wallets.length) {
-        this.onComplete?.()
-        this.stop()
-      } else {
-        this.scheduleNext()
-      }
-    }, this.interval)
+    } catch (err: any) {
+      this.onError?.(err)
+      this.stop()
+    }
   }
 
-  /** async iterator support */
-  async *[Symbol.asyncIterator]() {
-    for (const wallet of this.wallets) {
-      yield new Promise<string>((resolve) => {
-        this.onWallet = () => resolve(wallet)
-        this.start()
-      })
+  /** Clear the running timer */
+  private clearTimer(): void {
+    if (this.timerId) {
+      clearInterval(this.timerId)
+      this.timerId = null
     }
+  }
+
+
+  async *[Symbol.asyncIterator](): AsyncGenerator<string> {
+    // Ensure clean state
+    this.stop()
+    for (let i = 0; i < this.wallets.length; i++) {
+      yield this.wallets[i]
+      await new Promise((res) => setTimeout(res, this.interval))
+    }
+    this.onComplete?.()
+    if (this.resetOnComplete) this.currentIndex = 0
   }
 }
