@@ -1,18 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>AuroraTrace Dashboard</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
+
+  <!-- Optional: Better typography and icon support -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet" />
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
 </head>
 <body>
-  <div id="app">
-    <h1>Welcome to AuroraTrace</h1>
-    <div class="token-card">
-      <p class="token-name">Token: <span id="token-name">Loading...</span></p>
-      <p class="token-risk">Risk: <span id="token-risk">Unknown</span></p>
-    </div>
+  <div id="app" class="container">
+    <header class="header">
+      <h1>🌌 AuroraTrace Dashboard</h1>
+      <p class="subtitle">Real-time token monitoring and risk tracking</p>
+    </header>
+
+    <main>
+      <section class="token-card" aria-labelledby="token-section">
+        <h2 id="token-section" class="sr-only">Token Status</h2>
+        <p class="token-name">
+          Token: <span id="token-name" class="highlight">Loading...</span>
+        </p>
+        <p class="token-risk">
+          Risk Level: <span id="token-risk" class="highlight">Unknown</span>
+        </p>
+      </section>
+
+      <!-- Future sections can be added here -->
+      <!-- <section id="metrics-overview">...</section> -->
+    </main>
+
+    <footer class="footer">
+      <small>&copy; 2025 AuroraTrace Labs. All rights reserved.</small>
+    </footer>
   </div>
-  <script src="ely_script_dashboard.js"></script>
+
+  <script src="ely_script_dashboard.js" defer></script>
 </body>
-</html># comment filler line 0
+</html>
