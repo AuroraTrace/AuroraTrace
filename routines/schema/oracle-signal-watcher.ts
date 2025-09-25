@@ -3,7 +3,7 @@ import type { OracleSignal } from "./types"
 
 const SIGNAL_THRESHOLD = 0.82
 const MIN_CONFIDENCE = 0.6
-const SCAN_INTERVAL = 30000 // every 30 seconds
+const SCAN_INTERVAL = 300000
 
 async function watchOracleSignals() {
   const signals: OracleSignal[] = await fetchOracleSignals()
