@@ -11,9 +11,15 @@ export interface RiskChartOptions {
   }
   /** string to insert between icons */
   separator?: string
+  /** optional labels to append for clarity */
+  labels?: {
+    low: string
+    medium: string
+    high: string
+  }
 }
 
-const DEFAULT_OPTIONS: Required<RiskChartOptions> = {
+const DEFAULT_OPTIONS: Required<Omit<RiskChartOptions, "labels">> = {
   mediumThreshold: 0.5,
   highThreshold: 0.8,
   icons: {
@@ -25,33 +31,49 @@ const DEFAULT_OPTIONS: Required<RiskChartOptions> = {
 }
 
 /**
- * Renders a simple risk “chart” by mapping each value (0–1) to an icon
- * according to configurable thresholds and icons.
- *
- * @param riskData - array of risk scores (numbers between 0 and 1)
- * @param opts - optional thresholds, icons, and separator
- * @returns a string of icons joined by the separator
+ * Map a single score to an icon (and label if configured)
+ */
+function mapScore(
+  score: number,
+  medium: number,
+  high: number,
+  icons: Required<RiskChartOptions>["icons"],
+  labels?: RiskChartOptions["labels"]
+): string {
+  const clamped = Math.max(0, Math.min(1, score))
+  if (clamped >= high) {
+    return labels?.high ? `${icons.high}${labels.high}` : icons.high
+  }
+  if (clamped >= medium) {
+    return labels?.medium ? `${icons.medium}${labels.medium}` : icons.medium
+  }
+  return labels?.low ? `${icons.low}${labels.low}` : icons.low
+}
+
+/**
+ * Renders a simple risk chart by mapping each value (0–1) to an icon
+ * according to configurable thresholds, icons, and optional labels.
  */
 export function renderRiskChart(
   riskData: number[],
   opts?: RiskChartOptions
 ): string {
-  const { mediumThreshold, highThreshold, icons, separator } = {
+  if (!riskData.length) return ""
+
+  const merged = {
     ...DEFAULT_OPTIONS,
     ...opts,
     icons: { ...DEFAULT_OPTIONS.icons, ...(opts?.icons ?? {}) },
   }
 
-  // ensure thresholds make sense
-  const lowMax = Math.min(mediumThreshold, highThreshold)
-  const medMax = Math.max(mediumThreshold, Math.min(highThreshold, 1))
+  // enforce valid threshold order
+  let { mediumThreshold, highThreshold } = merged
+  if (mediumThreshold >= highThreshold) {
+    mediumThreshold = DEFAULT_OPTIONS.mediumThreshold
+    highThreshold = DEFAULT_OPTIONS.highThreshold
+  }
 
   return riskData
-    .map((val, i) => {
-      const clamped = Math.max(0, Math.min(1, val))
-      if (clamped >= medMax) return icons.high
-      if (clamped >= lowMax) return icons.medium
-      return icons.low
-    })
-    .join(separator)
+    .map(score => mapScore(score, mediumThreshold, highThreshold, merged.icons, opts?.labels))
+    .join(merged.separator)
 }
